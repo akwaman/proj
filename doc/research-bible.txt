@@ -1,0 +1,183 @@
+<html>
+<head>
+</head>
+<body>
+
+<h1>Crypto Programming<\h1>
+
+<h2>Mission<\h2>
+Develop expertise in:
+<ul>
+<li>Cryptographic Primitives</li>
+<li>Sidechannel Attack and Defensive Countermeasures</li>
+<li>Cryptographic Protocols</li>
+<li>C and Assembly language implementation</li>
+<li>Software Exploits and Defense</li>
+<li>Malware</li>
+</ul>
+
+<h2>Assembly<\h2>
+
+<h3>Tools</h3>
+<h4>AT&T Syntax<\h4>
+method 1:
+gcc -c foo.s 
+ld -o foo foo.o 
+
+method 2:
+as -gstabs -o foo.o foo.s
+ld -o foo foo.o
+
+<h4>Intel syntax using nasm<\h4>
+nasm -f elf64 foo.s -o foo.os
+ld -o foo foo.o   
+
+<h4>Miscellaneous</h4>
+objdump -D <foo>   disassembles object code
+wc -c <foo>   gives file size in bytes
+gdb <foo>
+readelf <foo>
+
+Generating assembler code from C:
+gcc -O2 -S -m32 foo.c   generates IA32 code
+gcc -O2 -S -m64 foo.c   generates x86_64 code
+
+
+<h3>Intel-64 aka x86_64</h3>
+
+<p>
+There are significant architectural differences with regards to function calling
+conventions, stack usage and of course registers in 32 versus 64 bit mode
+</p>
+
+<h4>Intel IA32 aka i386 32-bit</h4>
+<p>
+8 registers used as function arguments: eax, ebx, ecx, edx, eip, esp, ebp, esi
+function return value in eax 
+</p>
+
+<h3>Intel IA32-EM64T aka x86_64 64-bit</h3>
+<p>
+16 registers total: rax, rbx, rcx, rdx, rip, rsi, rbp, rsp,  r8, r9, r10, 
+r11, r12, r13, ..., r15
+
+Function arguments: rdi, rsi, rdx, rcx, r8d, r9d + stack variables (if you need them)
+return value in rax or rdx:rax (if you need 128 bits eg multiplication)
+
+stack pointer %rsp *must* be aligned to a 16 byte boundary before making a call
+must preserve these regs by saving to stack: rbp, rbx, r12, r13, r14, r15
+
+xmm0 .. xmm15 are 128-bit registers are used by Intel Streaming Extensions (SSE) which
+hold packed int or float types data for MMX SIMD instructions.
+
+Memory operand specification: offset (base register, index register, scale)
+The effective address = offset + base register + (index register * scale)
+All components of the expression are optional except that a scale must accompany
+an index register. Scale and offset are immediate values. 
+
+immediate operand: $69
+register operand: %rax
+memory operand: (%ebx)
+
+instructions have suffix to indicate width of operand: b (byte), w (2 byte word),
+l (4 byte 32-bit word), q (8 byte 64-bit word)
+
+movb $4, %al     # 8 bits
+movw $4, %ax     # 16 bits
+movl $4, %eax    # 32 bits
+movq $4, %rax    # 64 bits
+
+</p>
+
+<h4>Linux System Calling Convenstion</h4>
+<p>
+instruction: syscall 
+system function id: rax
+params: rdi, rsi, rdx, r10, r8, r9
+return: rax
+
+e.g. hello3.s  does 2 syscalls 
+
+sys_write: rax=1
+sys_exit:  rax=60
+
+</p>
+
+
+
+<h3>Examples</h3>
+<h4>Hello World</h4>
+
+================================================================================
+<h3>Hacks</h3>
+
+<h3>Stack Buffer Overflow</h3>
+
+
+<h2>ECC<\h2>
+
+<h2>RSA<\h2>
+
+
+
+--------------------------------------------------------------------------------
+AT&T syntax tips
+--------------------------------------------------------------------------------
+suffixes:
+b	byte
+w	word = 2 bytes
+l	long = 4 bytes
+
+
+testb $0x80, 17(%ebp)	# test high bit of byte offset by 17 from addr ptr in %ebp
+cmp     %rsi, %rax      # is rax less than rsi?
+cmovl   %rsi, %rax      # if yes, set move rsi to rax (function return value)
+
+
+--------------------------------------------------------------------------------
+notes 7.26.15 from darkcoding.net learning-assembler-on-linux
+
+programs start at _start
+	 c program's compiler puts it in for you automatically
+  	 does some setup and then calls main
+	 _start is the symbol that the linker ld looks up to know
+         wha address to put in the ELF header as the entry point address
+
+programs have to explicitly run exit system call
+	 otherwise pgm keeps running, getting next instr, eventually crashes
+
+you can call C stdlib functions from assembler by using gcc to link
+    	or pass the proper arguments to ld
+
+
+--------------------------------------------------------------------------------
+
+-------------------------------------------
+
+
+------------------------------------------
+Some useful ASCII character codes 
+NULL 0
+LF   10
+CR   13		0xD
+0    48		0x30
+9    57		0x39
+A    64		0x41
+Z    90		0x5A
+a    97		0x61
+z    122	0x7A
+
+normally terminate a string with 0 character
+
+-------------------------------------------------
+
+<h2>Cryptographic Primitives</h2>
+<h3>ECC</h3>
+<h3>RSA</h3>
+<h3>AES</h3>
+ECB, CTR, GCM modes
+
+<h3>SHA256 and HMAC</h3>
+
+</body>
+</html>

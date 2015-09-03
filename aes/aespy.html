@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<!-- saved from url=(0075)http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/ -->
+<html class=" js no-touch svg inlinesvg svgclippaths no-ie8compat" lang="en" style=""><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Brandon Sterne »   AES Tutorial / Python Implementation</title>
+  <link rel="stylesheet" href="http://brandon.sternefamily.net/wp-content/themes/sterno/foundation/css/foundation.css">
+  <link rel="stylesheet" href="http://brandon.sternefamily.net/wp-content/themes/sterno/style.css">
+  <link rel="icon" type="image/png" href="http://brandon.sternefamily.net/wp-content/themes/sterno/images/lion.png">
+  <script src="./aespy_files/custom.modernizr.js"></script>
+<script type="text/javascript" charset="UTF-8" src="./aespy_files/1JKe5Phx8maMyfoL2XhH8TkocY96EipUhlgb3n6dNnc.js"></script><style type="text/css">.recaptchatable td img{display:block}.recaptchatable .recaptcha_image_cell center img{height:57px}.recaptchatable .recaptcha_image_cell center{height:57px}.recaptchatable .recaptcha_image_cell{background-color:white;height:57px;padding:7px!important}.recaptchatable,#recaptcha_area tr,#recaptcha_area td,#recaptcha_area th{margin:0!important;border:0!important;border-collapse:collapse!important;vertical-align:middle!important}.recaptchatable *{margin:0;padding:0;border:0;color:black;position:static;top:auto;left:auto;right:auto;bottom:auto}.recaptchatable #recaptcha_image{position:relative;margin:auto;border:1px solid #dfdfdf!important}.recaptchatable #recaptcha_image #recaptcha_challenge_image{display:block}.recaptchatable #recaptcha_image #recaptcha_ad_image{display:block;position:absolute;top:0}.recaptchatable a img{border:0}.recaptchatable a,.recaptchatable a:hover{cursor:pointer;outline:none;border:0!important;padding:0!important;text-decoration:none;color:blue;background:none!important;font-weight:normal}.recaptcha_input_area{position:relative!important;background:none!important}.recaptchatable label.recaptcha_input_area_text{border:1px solid #dfdfdf!important;margin:0!important;padding:0!important;position:static!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important}.recaptcha_theme_red label.recaptcha_input_area_text,.recaptcha_theme_white label.recaptcha_input_area_text{color:black!important}.recaptcha_theme_blackglass label.recaptcha_input_area_text{color:white!important}.recaptchatable #recaptcha_response_field{font-size:11pt}.recaptcha_theme_blackglass #recaptcha_response_field,.recaptcha_theme_white #recaptcha_response_field{border:1px solid gray}.recaptcha_theme_red #recaptcha_response_field{border:1px solid #cca940}.recaptcha_audio_cant_hear_link{font-size:7pt;color:black}.recaptchatable{line-height:1em;border:1px solid #dfdfdf!important}.recaptcha_error_text{color:red}.recaptcha_only_if_privacy{float:right;text-align:right;margin-right:7px}#recaptcha-ad-choices{position:absolute;height:15px;top:0;right:0}#recaptcha-ad-choices img{height:15px}.recaptcha-ad-choices-collapsed{width:30px;height:15px;display:block}.recaptcha-ad-choices-expanded{width:75px;height:15px;display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-collapsed{display:none}#recaptcha-ad-choices:hover .recaptcha-ad-choices-expanded{display:block}
+
+.recaptcha_is_showing_audio .recaptcha_only_if_image,.recaptcha_isnot_showing_audio .recaptcha_only_if_audio,.recaptcha_had_incorrect_sol .recaptcha_only_if_no_incorrect_sol,.recaptcha_nothad_incorrect_sol .recaptcha_only_if_incorrect_sol{display:none !important}</style><script type="text/javascript" src="./aespy_files/reload"></script><script type="text/javascript" src="./aespy_files/reload(1)"></script></head>
+<body>
+
+  <div id="header" class="row">
+    <div class="large-12 columns text-center">
+      <a href="http://brandon.sternefamily.net/"><img src="./aespy_files/logo.png" alt="Brandon Sterne"></a>
+    </div>
+  </div>
+
+  <div id="main" class="row"><!-- main row -->
+
+
+    <div class="large-8 push-2 columns"><!-- middle column -->
+
+      
+        
+      <article class="post-91 post type-post status-publish format-standard hentry category-programming category-python category-security" id="post-91">
+
+	<header class="entry-header">
+                   <h2>AES Tutorial / Python Implementation <small>June 10th, 2007</small></h2>
+          
+	  	  <div class="comments-link">
+	    <a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/#comments" class="comments-link" title="Comment on AES Tutorial / Python Implementation">15 comments</a>	  </div><!-- .comments-link -->
+	          
+	          </header>
+
+                  <div class="entry-content">
+           <style type="text/css">
+p.title {
+	margin-top:0;
+	text-align:center;
+	font-weight:600;
+	width: 100%;
+	color:white;
+	background-color:rgb(0,0,128);
+}
+.middleblock li {
+	margin-bottom:.5em
+}
+ul li.indent0 {
+	margin-left:0;
+	margin-bottom:.5em
+}
+ul li.indent1 {
+	margin-left:1em;
+	list-style:circle;
+	margin-bottom:.5em
+}
+ul li.indent2 {
+	margin-left:1.5em;
+	list-style:disc;
+	margin-bottom:.5em
+}
+ul li.indent3 {
+	margin-left:2em;
+	list-style:none;
+	margin-bottom:.5em
+}
+ol li.indent0 {
+	margin:0;
+	margin-bottom:.5em
+}
+.code {
+	font-family:monospace;
+	white-space:pre;
+}
+</style>
+<div class="panel">
+<p><b>Update: 04-Apr-2009</b></p>
+<p>I fixed two bugs in my AES implementation pointed out to me by Josiah Carlson.  First, I was failing to pad properly files whose length was an even multiple of the block size.  In those cases, bytes would be lost upon decrypting the file.  Josiah also pointed out that I was using a static <a href="http://en.wikipedia.org/wiki/Initialization_vector">IV</a>, which leaks information about messages which share common prefixes.  This is a serious security bug and I was glad to have it pointed out.</p>
+<p>Feel free to check out the <a href="http://brandon.sternefamily.net/wp-content/uploads/2007/06/pyAES.patch_.txt">changes</a> I made or simply download the <a href="http://brandon.sternefamily.net/wp-content/uploads/2007/06/pyAES.txt">updated script</a>.</p>
+</div>
+<p>I’ve put together a series of slides as well as a Python implementation of AES, the symmetric-key cryptosystem.</p>
+<div style="border: 1px dashed #000; background-color:rgb(240,240,240); padding:10px; margin:auto;">
+<p style="text-align:center"><b>Source:</b> <a href="http://brandon.sternefamily.net/wp-content/uploads/2007/06/pyAES.txt">pyAES.py</a></p>
+<p><b>Sample Usage:</b> (color added for clarity)</p>
+<p class="code" style="text-align:left">[brandon@zodiac pyAES]$ cat &gt; testfile.txt<br>
+<span style="color:#00b000">The sky was the color of television tuned to a dead channel.</span><br>
+[brandon@zodiac pyAES]$ ./pyAES.py -e testfile.txt -o testfile_encrypted.txt<br>
+Password:<br>
+Encrypting file: testfile.txt<br>
+Encryption complete.<br>
+[brandon@zodiac pyAES]$ ./pyAES.py -d testfile_encrypted.txt -o testfile_decrypted.txt<br>
+Password:<br>
+Decrypting file: testfile_encrypted.txt<br>
+Decryption complete.<br>
+[brandon@zodiac pyAES]$ cat testfile_decrypted.txt<br>
+<span style="color:#00b000">The sky was the color of television tuned to a dead channel.</span><br>
+[brandon@zodiac pyAES]$ md5sum *<br>
+19725cef7495fd55540728759a6262c8  pyAES.py<br>
+<span style="color:#00b000">2fffc9072a7c09f4f97862c0bceb6021  testfile_decrypted.txt</span><br>
+<span style="color:#b00000">3e57070eaf1b4adf7f43b38e1c5ee631  testfile_encrypted.txt</span><br>
+<span style="color:#00b000">2fffc9072a7c09f4f97862c0bceb6021  testfile.txt</span>
+</p>
+</div>
+<p>					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">Symmetric Key Cryptography</p>
+<ul>
+<li class="indent0">Identical keys used to encrypt/decrypt messages</li>
+<li class="indent0">Can be implemented as block ciphers or stream ciphers</li>
+</ul>
+<p>					<b>Strengths:</b></p>
+<ul>
+<li class="indent0">Speed</li>
+<li class="indent1">Much less computationally intensive than public-key crypto</li>
+<li class="indent0">Easy to implement in hardware as well as software</li>
+</ul>
+<p>					<b>Weaknesses:</b></p>
+<ul>
+<li class="indent0">Key Management</li>
+<li class="indent1"><em>n</em> users require <em>n</em>(<em>n</em>-1)/2 keys for all to communicate</li>
+<li class="indent1">secure key distribution is a challenge</li>
+<li class="indent0">Cannot be used (directly) for authentication or non-repudiation</li>
+</ul></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES – The Advanced Encryption Standard</p>
+<ul>
+<li class="indent0">Rijndael algorithm invented by Joan Daemen and Vincent Rijmen and selected as AES winner by NIST in 2001</li>
+<li class="indent0">AES uses fixed block size of 128-bits and key sizes of 128, 192 or 256 bits (though Rijndael specification allows for variable block and key sizes)</li>
+<li class="indent0">Most of the calculations in AES are performed within a finite field</li>
+<li class="indent1">There are a finite number of elements within the field and all operations on those elements result in an element also contained in the field</li>
+</ul></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES Operations</p>
+<ul>
+<li class="indent0">AES operates on a 4×4 matrix referred to as the <em>state</em></li>
+<li class="indent1">16 bytes == 128 bits == block size</li>
+<li class="indent0">All operations in a round of AES are invertible</li>
+<li class="indent1">AddRoundKey – each byte of the round key is combined with the corresponding byte in the state using XOR</li>
+<li class="indent1">SubBytes – each byte in the state is replaced with a different byte according to the S-Box lookup table</li>
+<li class="indent1">ShiftRows – each row in the state table is shifted by a varying number of bytes</li>
+<li class="indent1">MixColumns – each column in the state table is multiplied with a fixed polynomial</li>
+</ul></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES Operation – AddRoundKey</p>
+<ul>
+<li class="indent0">Each byte of the round key is XORed with the corresponding byte in the state table</li>
+<li class="indent0">Inverse operation is identical since XOR a second time returns the original values</li>
+</ul>
+<pre class="brush: python; gutter: false"># XOR each byte of the roundKey with the state table
+def addRoundKey(state, roundKey):
+    for i in range(len(state)):
+        state[i] = state[i] ^ roundKey[i]</pre>
+<p></p></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES Operation – SubBytes</p>
+<ul>
+<li class="indent0">Each byte of the state table is substituted with the value in the S-Box whose index is the value of the state table byte</li>
+<li class="indent0">Provides non-linearity (algorithm not equal to the sum of its parts)</li>
+<li class="indent0">Inverse operation is performed using the inverted S-Box</li>
+</ul>
+<pre class="brush: python; gutter: false"># do sbox transform on each of the values in the state table
+def subBytes(state):
+    for i in range(len(state)):
+        state[i] = sbox[state[i]]
+
+# sbox transformations are invertible
+&gt;&gt;&gt; sbox[237]
+85
+&gt;&gt;&gt; sboxInv[85]
+237
+&gt;&gt;&gt; sbox[55]
+154
+&gt;&gt;&gt; sbox[154]
+184
+&gt;&gt;&gt; sboxInv[184]
+154
+&gt;&gt;&gt; sboxInv[154]
+55</pre>
+<p></p></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES Operation – ShiftRows</p>
+<ul>
+<li class="indent0">Each row in the state table is shifted left by the number of bytes represented by the row number</li>
+<li class="indent0">Inverse operation simply shifts each row to the right by the number of bytes as the row number</li>
+</ul>
+<pre class="brush: python; gutter: false"># returns a copy of the word shifted n bytes (chars) positive
+# values for n shift bytes left, negative values shift right
+def rotate(word, n):
+    return word[n:]+word[0:n]
+
+# iterate over each "virtual" row in the state table
+# and shift the bytes to the LEFT by the appropriate
+# offset
+def shiftRows(state):
+    for i in range(4):
+        state[i*4:i*4+4] = rotate(state[i*4:i*4+4],i)</pre>
+<p></p></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES Operation – MixColumns</p>
+<ul>
+<li class="indent0">MixColumns is performed by multiplying each column (within the <a href="http://en.wikipedia.org/wiki/Rijndael_Galois_field">Galois finite field</a>) by the following matrix:</li>
+</ul>
+<p>					<img src="./aespy_files/aes_mix_columns_matrix.png" alt=""></p>
+<ul>
+<li class="indent0">The inverse operation is performed by multiplying each column by the following inverse matrix:</li>
+</ul>
+<p>					<img src="./aespy_files/aes_mix_columns_inv_matrix.png" alt=""></p>
+<pre class="brush: python; gutter: false"># Galois Multiplication
+def galoisMult(a, b):
+    p = 0
+    hiBitSet = 0
+    for i in range(8):
+        if b &amp; 1 == 1:
+            p ^= a
+        hiBitSet = a &amp; 0x80
+        a &lt;&lt;= 1
+        if hiBitSet == 0x80:
+            a ^= 0x1b
+        b &gt;&gt;= 1
+    return p % 256
+
+# mixColumn does Galois multiplication on a state column
+def mixColumn(column):
+    temp = copy(column)
+    column[0] = galoisMult(temp[0],2) ^ galoisMult(temp[3],1) ^ \
+                galoisMult(temp[2],1) ^ galoisMult(temp[1],3)
+    column[1] = galoisMult(temp[1],2) ^ galoisMult(temp[0],1) ^ \
+                galoisMult(temp[3],1) ^ galoisMult(temp[2],3)
+    column[2] = galoisMult(temp[2],2) ^ galoisMult(temp[1],1) ^ \
+                galoisMult(temp[0],1) ^ galoisMult(temp[3],3)
+    column[3] = galoisMult(temp[3],2) ^ galoisMult(temp[2],1) ^ \
+                galoisMult(temp[1],1) ^ galoisMult(temp[0],3)</pre>
+<p></p></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES – Pulling It All Together</p>
+<p>					The AES Cipher operates using a varying <b>number of rounds</b>, based on the size of the <b>cipher key</b>.</p>
+<ul>
+<li class="indent0">A <b>round</b> of AES consists of the four operations performed in succession: AddRoundKey, SubBytes, ShiftRows, and MixColumns (MixColumns is omitted in the final round)</li>
+<li class="indent0">128-bit key → rounds, 192-bit key → 12 rounds, 256-bit key → 14 rounds</li>
+<li class="indent0">The AES cipher key is expanded according to the Rijndael key schedule and a different part of the expanded key is used for each round of AES</li>
+<li class="indent1">The expanded key will be of length <b>(block size * num rounds+1)</b></li>
+<li class="indent1">128-bit cipher key expands to 176-byte key</li>
+<li class="indent1">192-bit cipher key expands to 208-byte key</li>
+<li class="indent1">256-bit cipher key expands to 240-byte key</li>
+</ul></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES – Key Expansion Operations</p>
+<p>					AES key expansion consists of several primitive operations:</p>
+<ol>
+<li class="indent0">Rotate – takes a 4-byte word and rotates everything one byte to the left, e.g. <span style="code">rotate([1,2,3,4]) → [2, 3, 4, 1]</span></li>
+<li class="indent0">SubBytes – each byte of a word is substituted with the value in the S-Box whose index is the value of the original byte</li>
+<li class="indent0">Rcon – the first byte of a word is XORed with the <b>round constant</b>.  Each value of the Rcon table is a member of the Rinjdael finite field.</li>
+</ol>
+<pre class="brush: python; gutter: false"># takes 4-byte word and iteration number
+def keyScheduleCore(word, i):
+    # rotate word 1 byte to the left
+    word = rotate(word, 1)
+    newWord = []
+    # apply sbox substitution on all bytes of word
+    for byte in word:
+        newWord.append(sbox[byte])
+    # XOR the output of the rcon[i] transformation with the first part
+    # of the word
+    newWord[0] = newWord[0]^rcon[i]
+    return newWord</pre>
+<p></p></div>
+<p>					<!-- end Slide --></p>
+<p>					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES – Key Expansion Algorithm (256-bit)</p>
+<p>					Pseudo-code for AES Key Expansion:</p>
+<ol>
+<li class="indent0 code"><b>expandedKey</b>[0:32] → <b>cipherKey</b>[0:32]  # copy first 32 bytes of cipher key to expanded key</li>
+<li class="indent0 code"><b>i</b> → 1  # Rcon iterator</li>
+<li class="indent0 code"><b>temp</b> = byte[4]  # 4-byte container for temp storage</li>
+<li class="indent0 code">while size(<b>expandedKey</b>) &lt; 240<br>
+    <b>temp</b> → last 4 bytes of <b>expandedKey</b><p></p>
+<p>    # every 32 bytes apply core schedule to temp<br>
+    if size(<b>expandedKey</b>)%32 == 0<br>
+        <b>temp</b> = keyScheduleCore(<b>temp</b>, <b>i</b>)<br>
+        <b>i</b> → <b>i</b> + 1<br>
+    # since 256-bit key -&gt; add an extra sbox transformation to each new byte<br>
+    for <b>j</b> in range(4):<br>
+        <b>temp</b>[<b>j</b>] = <b>sbox</b>[<b>temp</b>[<b>j</b>]]<br>
+    # XOR temp with the 4-byte block 32 bytes before the end of the current expanded key.<br>
+    # These 4 bytes become the next bytes in the expanded key<br>
+    <b>expandedKey</b>.append( <b>temp</b> XOR <b>expandedKey</b>[size(<b>expandedKey</b>)-32:size(<b>expandedKey</b>)-28]</p></li>
+</ol>
+<p>					Another function to note…</p>
+<pre class="brush: python; gutter: false"># returns a 16-byte round key based on an expanded key and round number
+def createRoundKey(expandedKey, n):
+    return expandedKey[(n*16):(n*16+16)]</pre>
+<p></p></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES – Encrypting a Single Block</p>
+<ol>
+<li class="indent0"><b>state</b> → block of plaintext    # 16 bytes of plaintext are copied into the state</li>
+<li class="indent0"><b>expandedKey</b> = expandKey(<b>cipherKey</b>)    # create 240-bytes of key material to be used as round keys</li>
+<li class="indent0"><b>roundNum</b> → 0    # counter for which round number we are in</li>
+<li class="indent0"><b>roundKey</b> → createRoundKey(<b>expandedKey</b>, <b>roundNum</b>)</li>
+<li class="indent0">addRoundKey(<b>state</b>, <b>roundKey</b>)    # each byte of state is XORed with the present roundKey</li>
+<li class="indent0">while <b>roundNum</b> &lt; 14   # 14 rounds in AES-256<br>
+    <b>roundKey</b> → createRoundKey(<b>expandedKey</b>, <b>roundNum</b>)<br>
+    # round of AES consists of 1. subBytes, 2. shiftRows, 3. mixColumns, and 4. addRoundKey<br>
+    aesRound(<b>state</b>, <b>roundKey</b>)<br>
+    <b>roundNum</b> → <b>roundNum</b> + 1</li>
+<li class="indent0"># for the last round leave out the mixColumns operation<br>
+    <b>roundKey</b> = createRoundKey(<b>expandedKey</b>, <b>roundNum</b>)<br>
+    subBytes(<b>state</b>)<br>
+    shiftRows(<b>state</b>)<br>
+    addRoundKey(<b>state</b>)</li>
+<li class="indent0">return <b>state</b> as block of ciphertext</li>
+</ol></div>
+<p>					<!-- end Slide --><br>
+					<!-- begin Slide --></p>
+<div class="middleBlock">
+<p class="title">AES – Encrypting a Single Block (Demo)</p>
+<pre class="brush: python; gutter: false">&gt;&gt;&gt; key = passwordToKey("s0m3_p@ssw0rD")
+&gt;&gt;&gt; key
+[62, 142, 78, 2, 164, 231, 18, 196, 148, 177, 82, 186, 240, 44, 136, 242,
+23, 13, 20, 169, 248, 69, 163, 79, 13, 155, 97, 200, 241, 15, 76, 15]
+&gt;&gt;&gt; plaintext = textToBlock("Hiro Protagonist")
+&gt;&gt;&gt; plaintext
+[72, 105, 114, 111, 32, 80, 114, 111, 116, 97, 103, 111, 110, 105, 115, 116]
+&gt;&gt;&gt; blockToText(plaintext)
+'Hiro Protagonist'
+&gt;&gt;&gt; ciphertext = aesEncrypt(plaintext, key)
+
+*** aesMain ***
+initial state:
+[72, 105, 114, 111, 32, 80, 114, 111, 116, 97, 103, 111, 110, 105, 115, 116]
+state after adding roundKey0:
+[118, 231, 60, 109, 132, 183, 96, 171, 224, 208, 53, 213, 158, 69, 251, 134]
+
+*** AES Round1 ***
+state after subBytes:
+[56, 148, 235, 60, 95, 169, 208, 98, 225, 112, 150, 3, 11, 110, 15, 68]
+state after shiftRows:
+[56, 148, 235, 60, 169, 208, 98, 95, 150, 3, 225, 112, 68, 11, 110, 15]
+state after mixColumns:
+[66, 80, 228, 230, 148, 33, 121, 29, 106, 95, 226, 146, 255, 98, 121, 117]
+state after addRoundKey:
+[85, 93, 240, 79, 108, 100, 218, 82, 103, 196, 131, 90, 14, 109, 53, 122]
+
+&lt;-- SNIP --&gt;
+
+*** AES Round 14 (final) ***
+state after subBytes:
+[0, 229, 171, 70, 93, 137, 135, 251, 99, 182, 88, 166, 228, 229, 251, 97]
+state after shiftRows:
+[0, 229, 171, 70, 137, 135, 251, 93, 88, 166, 99, 182, 97, 228, 229, 251]
+state after addRoundKey:
+[195, 123, 205, 183, 213, 202, 50, 223, 223, 164, 99, 86, 126, 34, 107, 142]
+
+&gt;&gt;&gt; ciphertext
+[195, 123, 205, 183, 213, 202, 50, 223, 223, 164, 99, 86, 126, 34, 107, 142]
+
+&gt;&gt;&gt; blockToText(ciphertext)
+'\xc3{\xcd\xb7\xd5\xca2\xdf\xdf\xa4cV~"k\x8e'
+&gt;&gt;&gt; cleartext = aesDecrypt(ciphertext, key)
+
+*** aesMainInv ***
+initial state:
+[195, 123, 205, 183, 213, 202, 50, 223, 223, 164, 99, 86, 126, 34, 107, 142]
+
+*** AES Round 14 ***
+state after addRoundKey:
+[0, 229, 171, 70, 137, 135, 251, 93, 88, 166, 99, 182, 97, 228, 229, 251]
+state after shiftRowsInv:
+[0, 229, 171, 70, 93, 137, 135, 251, 99, 182, 88, 166, 228, 229, 251, 97]
+state after subBytesInv:
+[82, 42, 14, 152, 141, 242, 234, 99, 0, 121, 94, 197, 174, 42, 99, 216]
+
+&lt;-- SNIP --&gt;
+
+*** AES Round 0 (final) ***
+state after adding roundKey0:
+[72, 105, 114, 111, 32, 80, 114, 111, 116, 97, 103, 111, 110, 105, 115, 116]
+&gt;&gt;&gt; cleartext
+[72, 105, 114, 111, 32, 80, 114, 111, 116, 97, 103, 111, 110, 105, 115, 116]
+&gt;&gt;&gt; blockToText(cleartext)
+'Hiro Protagonist'</pre>
+<p></p></div>
+<p>					<!-- end Slide --></p>
+<p><script type="text/javascript" src="./aespy_files/shCore.js"></script><br>
+<script type="text/javascript" src="./aespy_files/shBrushPython.js"></script></p>
+<link rel="stylesheet" type="text/css" href="./aespy_files/shCore.css">
+<link type="text/css" rel="Stylesheet" href="./aespy_files/shThemeDefault.css">
+<script type="text/javascript">SyntaxHighlighter.all()</script><p></p>
+                    </div><!-- .entry-content -->
+         
+                  <footer class="entry-meta">
+         This entry was posted in <a href="http://brandon.sternefamily.net/category/programming/" rel="category tag">Programming</a>, <a href="http://brandon.sternefamily.net/category/python/" rel="category tag">Python</a>, <a href="http://brandon.sternefamily.net/category/security/" rel="category tag">Security</a> on <a href="./aespy_files/aespy.html" title="9:51 pm" rel="bookmark"><time class="entry-date" datetime="2007-06-10T21:51:50+00:00">June 10, 2007</time></a><span class="by-author"> by <span class="author"><a href="http://brandon.sternefamily.net/author/admin/" title="View all posts by bsterne" rel="author">bsterne</a></span></span>.                  </footer><!-- .entry-meta -->
+         
+      </article>
+
+            <div id="post-nav-below" class="row">
+      <div class="small-6 columns">
+		<span class="nav-previous"><a href="http://brandon.sternefamily.net/2007/04/programming-skills-test/" rel="prev">« Programming Skills Test</a></span>
+      </div>
+      <div class="small-6 columns text-right">
+        <span class="nav-next"><a href="http://brandon.sternefamily.net/2007/12/play-dark-castle-in-windows/" rel="next">Play Dark Castle in Windows »</a></span>
+      </div>
+    </div>
+
+        
+<div id="comments" class="comments-area">
+
+    <h3 class="comments-title">
+  15 comments on “<span>AES Tutorial / Python Implementation</span>”  </h3>
+
+  <ol class="commentlist">
+  		<li class="comment even thread-even depth-1" id="comment-482">
+				<div id="div-comment-482" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://inedit00.blogspot.com/" rel="external nofollow" class="url">inedit00</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-482">
+			December 11, 2009 at 6:22 am</a>		</div>
+
+		<p>Hi mate. I’m interested in the source code of Python AES implementation. Maybe you can upload again the file, because the link seems to be broken. Thanks!</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-484">
+				<div id="div-comment-484" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://brandon.sternefamily.net/" rel="external nofollow" class="url">bsterne</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-484">
+			December 11, 2009 at 10:30 am</a>		</div>
+
+		<p>Thanks for pointing that out.  The broken link is fixed now.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-490">
+				<div id="div-comment-490" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://inedit00.blogspot.com/" rel="external nofollow" class="url">inedit00</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-490">
+			December 12, 2009 at 10:43 am</a>		</div>
+
+		<p>Thank you very much.</p>
+<p>Jan.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-963">
+				<div id="div-comment-963" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">thanassis</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-963">
+			February 24, 2010 at 3:35 am</a>		</div>
+
+		<p>A small bug: in line 360 of the script, change “filename” to “outputfile”.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="comment-965">
+				<div id="div-comment-965" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://brandon.sternefamily.net/" rel="external nofollow" class="url">bsterne</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-965">
+			February 24, 2010 at 11:20 am</a>		</div>
+
+		<p>@thanassis,</p>
+<p>Good catch, thank you.  The bug is fixed now.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-1491">
+				<div id="div-comment-1491" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">Colombo</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1491">
+			September 9, 2010 at 4:11 pm</a>		</div>
+
+		<p>Question: suppose AES is used being used a stream cipher and the attacker knows the actual contents of the initial blocks (which is not difficult because, for example, most XMLs begin with DOCTYPE header). Can the attacker get the cipher text and derive the key from the known plaintext from the header?</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-1537">
+				<div id="div-comment-1537" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">arun</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1537">
+			March 7, 2011 at 11:51 pm</a>		</div>
+
+		<p>gud lecturer ..Have worked with Equivalent Inverse Cipher???????<br>
+I need code for it in C</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-1625">
+				<div id="div-comment-1625" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">Samee</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1625">
+			July 6, 2012 at 2:08 pm</a>		</div>
+
+		<p>Interesting, you have separate encrypt and decrypt functions, but they both invoke aesEncrypt. In fact in this implementation, since you are simply XORing plaintext with a key, the encryption is very malleable … I could easily change the ciphertext of “Help him” to “kill him” even if I can never decrypt it. I know it is not supposed to provide authentication, but still. </p>
+<p>So I’m wondering why you chose to implement it like this. Usually people would implement it using one of the standard block cipher modes (<a href="http://en.wikipedia.org/wiki/Cipher_modes" rel="nofollow">http://en.wikipedia.org/wiki/Cipher_modes</a>) to provide non-malleability.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="comment-1626">
+				<div id="div-comment-1626" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://brandon.sternefamily.net/" rel="external nofollow" class="url">bsterne</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1626">
+			July 7, 2012 at 10:59 am</a>		</div>
+
+		<p>Hi Samee,</p>
+<p>Thanks for the comments, though I think you rushed through the reading of my code.  First, the encrypt and decrypt functions do call separate methods, so I’m not sure where that comment came from or why it’s relevant.  Your example of malleability is extremely contrived.  Almost no crypto is going to withstand an attack if you have known plaintext and known ciphertexts, so I don’t think that’s an indictment of my code in particular.  I would love to see an example of an 8 byte encrypted message, in plaintext and ciphertext, that can withstand this type of tampering.  As far as your comment about not “XORing plaintext with a key”, I have not seen very many cryptosystems that don’t follow this pattern.  All of the block cipher modes operate by generating blocks of key material and XORing those with blocks of plaintext to produce blocks of ciphertext.  I don’t quite see how to avoid this pattern.  Finally, my code does implement AES in <a href="http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation#Output_feedback_.28OFB.29" rel="nofollow">Output Feedback Mode</a>, so I am aware of block cipher modes, but I still don’t think these solve your example above.  Maybe you can clarify your comments.</p>
+<p>Thanks,<br>
+Brandon</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-1627">
+				<div id="div-comment-1627" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">Samee</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1627">
+			July 7, 2012 at 1:11 pm</a>		</div>
+
+		<p>You know what, you are right. I think I was confused by something else</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-1710">
+				<div id="div-comment-1710" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">Josh</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1710">
+			November 2, 2013 at 12:45 pm</a>		</div>
+
+		<p>Hello. Can you please fix the link to the pyAES.py file, since it is broken.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor odd alt thread-odd thread-alt depth-1" id="comment-1899">
+				<div id="div-comment-1899" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://brandon.sternefamily.net/" rel="external nofollow" class="url">bsterne</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-1899">
+			January 27, 2014 at 10:25 am</a>		</div>
+
+		<p>Thanks, Josh.  Link is fixed now.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="comment-2053">
+				<div id="div-comment-2053" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://jstation.cz/" rel="external nofollow" class="url">Paladin</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-2053">
+			April 18, 2014 at 9:54 am</a>		</div>
+
+		<p>1) thanks for tutorial, great work <img src="./aespy_files/icon_smile.gif" alt=":)" class="wp-smiley"><br>
+2) images in section mixColumns do not exist anymore.. :/</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-2055">
+				<div id="div-comment-2055" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn">Ivan</cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-2055">
+			June 25, 2014 at 7:42 am</a>		</div>
+
+		<p>G’day mate,</p>
+<p>I’ve downloaded and tried yor code, and I get this error (using python 3.3) Python# time ./pyAES.py -e testfile.txt -o testfile_enc.txt<br>
+  File “./pyAES.py”, line 352<br>
+    print “pyAES: unable to open input file -“, myInput<br>
+                                             ^<br>
+SyntaxError: invalid syntax<br>
+Error in sys.excepthook:<br>
+Traceback (most recent call last):<br>
+  File “/usr/lib/python3/dist-packages/apport_python_hook.py”, line 63, in apport_excepthook<br>
+    from apport.fileutils import likely_packaged, get_recent_crashes<br>
+  File “/usr/lib/python3/dist-packages/apport/__init__.py”, line 5, in<br>
+    from apport.report import Report<br>
+  File “/usr/lib/python3/dist-packages/apport/report.py”, line 30, in<br>
+    import apport.fileutils<br>
+  File “/usr/lib/python3/dist-packages/apport/fileutils.py”, line 23, in<br>
+    from apport.packaging_impl import impl as packaging<br>
+  File “/usr/lib/python3/dist-packages/apport/packaging_impl.py”, line 20, in<br>
+    import apt<br>
+  File “/usr/lib/python3/dist-packages/apt/__init__.py”, line 23, in<br>
+    import apt_pkg<br>
+ImportError: No module named ‘apt_pkg’</p>
+<p>Original exception was:<br>
+  File “./pyAES.py”, line 352<br>
+    print “pyAES: unable to open input file -“, myInput<br>
+                                             ^<br>
+SyntaxError: invalid syntax</p>
+<p>but when I use python 2 (like the original code) everything works fine.</p>
+<p>My question as I’m newby in python and basically I’m testing some ciphers is, Do you know why this error ocurr and why is linked to the version, obiusly python3 is doing something different that i dont know and/or i cant tell.</p>
+<p>I’ll be nice if you can give me a hand about it.</p>
+<p>Thanks a lot and your code is really nice <img src="./aespy_files/icon_biggrin.gif" alt=":D" class="wp-smiley"></p>
+<p>take care</p>
+<p>cya</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-admin bypostauthor even thread-even depth-1" id="comment-2063">
+				<div id="div-comment-2063" class="comment-body">
+				<div class="comment-author vcard">
+						<cite class="fn"><a href="http://brandon.sternefamily.net/" rel="external nofollow" class="url">bsterne</a></cite> <span class="says">says:</span>		</div>
+		
+		<div class="comment-meta commentmetadata"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/comment-page-1/#comment-2063">
+			September 9, 2014 at 8:29 am</a>		</div>
+
+		<p>In Python 3 <code>print</code> is no longer a statement and has been changed to a proper function. It needs to be called as such, e.g. <code>print("hello")</code>. This code is not valid Python 3.</p>
+
+		<div class="reply">
+					</div>
+				</div>
+		</li><!-- #comment-## -->
+  </ol><!-- .commentlist -->
+
+  
+		
+	
+									<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/#respond" style="display:none;">Cancel reply</a></small></h3>
+									<form action="http://brandon.sternefamily.net/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">Your email address will not be published. Required fields are marked <span class="required">*</span></p>							<p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required="true"></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required="true"></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30"></p>
+												<p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes:  <code>&lt;a href="" title=""&gt; &lt;abbr title=""&gt; &lt;acronym title=""&gt; &lt;b&gt; &lt;blockquote cite=""&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=""&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=""&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="Post Comment" class="button small radius">
+							<input type="hidden" name="comment_post_ID" value="91" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="26246fffd3"></p>                <script type="text/javascript">
+                    var RecaptchaOptions = { theme : 'clean', lang : 'en' , tabindex : 5 };
+                </script><script type="text/javascript" src="./aespy_files/challenge"></script><script type="text/javascript" src="./aespy_files/recaptcha.js"></script><div id="recaptcha_widget_div" class=" recaptcha_nothad_incorrect_sol recaptcha_isnot_showing_audio"><div id="recaptcha_area"><table id="recaptcha_table" class="recaptchatable recaptcha_theme_clean"> <tbody><tr height="73"> <td class="recaptcha_image_cell" width="302"><center><div id="recaptcha_image" style="width: 300px; height: 57px;"><img id="recaptcha_challenge_image" alt="reCAPTCHA challenge image" height="57" width="300" src="./aespy_files/image"></div></center></td> <td style="padding: 10px 7px 7px 7px;"> <a id="recaptcha_reload_btn" title="Get a new challenge" tabindex="6"><img id="recaptcha_reload" width="25" height="18" alt="Get a new challenge" src="./aespy_files/refresh.png"></a> <a id="recaptcha_switch_audio_btn" class="recaptcha_only_if_image" title="Get an audio challenge" tabindex="7"><img id="recaptcha_switch_audio" width="25" height="15" alt="Get an audio challenge" src="./aespy_files/audio.png"></a><a id="recaptcha_switch_img_btn" class="recaptcha_only_if_audio" title="Get a visual challenge" tabindex="8"><img id="recaptcha_switch_img" width="25" height="15" alt="Get a visual challenge" src="./aespy_files/text.png"></a> <a id="recaptcha_whatsthis_btn" title="Help" tabindex="9"><img id="recaptcha_whatsthis" width="25" height="16" src="./aespy_files/help.png" alt="Help"></a> </td> <td style="padding: 18px 7px 18px 7px;"> <img id="recaptcha_logo" alt="" width="71" height="36" src="./aespy_files/logo(1).png"> </td> </tr> <tr> <td style="padding-left: 7px;"> <div class="recaptcha_input_area" style="padding-top: 2px; padding-bottom: 7px;"> <span id="recaptcha_challenge_field_holder" style="display: none;"><input type="hidden" name="recaptcha_challenge_field" id="recaptcha_challenge_field" value="03AHJ_VutvDI9nfWOWVNvFzoz9MOolX8UGERaucXhKE4nib9WYw5_DgaoQrtAU3zluLRZ0aKR1-G7h2l9gYDIKLlCRitWSiP7cqBP3gSHDdUzjVmKBLI8Mb6nB0HoPJrZu_1N-3dXX-CFzzLU9_bdhpMJIayV6PZwjkbLC1b3IMYXbSTX0VA2gRx6zGVlPfw9RIvsdv846H-entZANr9JsCu5pHtT2LJmHuhluCvij5wCF7CmaXlkzzFq_GR55W5qhXhSX27L-xRYVwwbIIlWpYqQ5eUJ1Midbnw"></span><input style="border: 1px solid #3c3c3c; width: 302px;" name="recaptcha_response_field" id="recaptcha_response_field" type="text" placeholder="Type the text" autocomplete="off" tabindex="5"> </div> </td> <td colspan="2"><span id="recaptcha_privacy" class="recaptcha_only_if_privacy" tabindex="9"><a href="http://www.google.com/intl/en/policies/" target="_blank">Privacy &amp; Terms</a></span></td> </tr> </tbody></table> </div></div>
+
+	<noscript>
+  		&lt;iframe src="http://www.google.com/recaptcha/api/noscript?k=6LelvggAAAAAAIgcszFfUjrMLDzf0AGWjzePgMIX" height="300" width="500" frameborder="0"&gt;&lt;/iframe&gt;&lt;br/&gt;
+  		&lt;textarea name="recaptcha_challenge_field" rows="3" cols="40"&gt;&lt;/textarea&gt;
+  		&lt;input type="hidden" name="recaptcha_response_field" value="manual_challenge"/&gt;
+	</noscript>                        <div id="recaptcha-submit-btn-area">&nbsp;</div>
+                        <noscript>
+                         &lt;style type='text/css'&gt;#submit {display:none;}&lt;/style&gt;
+                         &lt;input name="submit" type="submit" id="submit-alt" tabindex="6" value="Submit Comment"/&gt; 
+                        </noscript><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="120"></p>					</form>
+							</div><!-- #respond -->
+					
+</div><!-- #comments .comments-area -->
+
+      
+    </div><!-- end middle column -->
+
+    <div class="large-2 pull-8 columns"><!-- left column -->
+
+      <div class="section-container vertical-nav" data-section="vertical-nav" data-options="one_up: false;" style="">
+<section><p class="title" style="left: 0px;"><a href="https://github.com/bsterne">Code</a></p></section>
+<section><p class="title" style="left: 151px;"><a href="http://sternefamily.net/photos/">Photos</a></p></section>
+</div>
+      <div class="panel ad"><p><strong><a href="http://sharengeti.com/">Sharengeti</a></strong><br>A community-driven collection of the best links on the Web, delivering a tailored browsing experience to each user.</p></div>
+    </div><!-- end left column -->
+
+    <div class="large-2 columns"><!-- right column -->
+      <div id="connect" class="panel text-center">
+        <div class="row">
+          <div class="small-4 columns">
+            <a href="https://twitter.com/bsterne"><i class="foundicon-twitter"></i></a>
+          </div>
+          <div class="small-4 columns">
+            <a href="https://www.linkedin.com/in/brandonsterne">
+              <i class="foundicon-linkedin"></i>
+            </a>
+          </div>
+          <div class="small-4 columns">
+            <a href="http://brandon.sternefamily.net/feed/"><i class="foundicon-rss"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div id="sidebar" class="panel ad">
+        <aside id="search-4" class="widget widget_search"><form class="custom">
+  <div class="row">
+    <div class="large-12 columns">
+      <label for="s">Search Posts</label>
+      <input type="text" id="s" name="s">
+    </div>
+  </div>
+</form>
+</aside>		<aside id="recent-posts-3" class="widget widget_recent_entries"><form class="custom">		<label>Recent Posts</label>		<ul>
+					<li>
+				<a href="http://brandon.sternefamily.net/2013/11/simple-local-web-servers/">Simple Local Web servers</a>
+						</li>
+					<li>
+				<a href="http://brandon.sternefamily.net/2013/10/standing-on-the-shoulders-of-giants/">Standing on the Shoulders of Giants</a>
+						</li>
+					<li>
+				<a href="http://brandon.sternefamily.net/2011/03/moving-to-github/">Moving to GitHub</a>
+						</li>
+				</ul>
+		</form></aside><aside id="categories-4" class="widget widget_categories"><form class="custom"><label>Categories</label><select name="cat" id="cat" class="postform hidden-field" data-id="1437357698942-YpgjE">
+	<option value="-1">Category</option>
+	<option class="level-0" value="7">Books&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="9">Games&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="11">Making&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="10">Mozilla&nbsp;&nbsp;(9)</option>
+	<option class="level-0" value="15">Open Source&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="3">Programming&nbsp;&nbsp;(22)</option>
+	<option class="level-0" value="4">Python&nbsp;&nbsp;(13)</option>
+	<option class="level-0" value="6">Security&nbsp;&nbsp;(9)</option>
+	<option class="level-0" value="12">Sports&nbsp;&nbsp;(1)</option>
+	<option class="level-0" value="13">Unix&nbsp;&nbsp;(2)</option>
+	<option class="level-0" value="5">Web Development&nbsp;&nbsp;(9)</option>
+	<option class="level-0" value="8">Web Security&nbsp;&nbsp;(6)</option>
+</select><div class="custom dropdown postform" data-id="1437357698942-YpgjE"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/#" class="current">Category</a><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/#" class="selector"></a><ul><li class="selected">Category</li><li class="level-0">Books&nbsp;&nbsp;(1)</li><li class="level-0">Games&nbsp;&nbsp;(1)</li><li class="level-0">Making&nbsp;&nbsp;(1)</li><li class="level-0">Mozilla&nbsp;&nbsp;(9)</li><li class="level-0">Open Source&nbsp;&nbsp;(1)</li><li class="level-0">Programming&nbsp;&nbsp;(22)</li><li class="level-0">Python&nbsp;&nbsp;(13)</li><li class="level-0">Security&nbsp;&nbsp;(9)</li><li class="level-0">Sports&nbsp;&nbsp;(1)</li><li class="level-0">Unix&nbsp;&nbsp;(2)</li><li class="level-0">Web Development&nbsp;&nbsp;(9)</li><li class="level-0">Web Security&nbsp;&nbsp;(6)</li></ul></div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+	var dropdown = document.getElementById("cat");
+	function onCatChange() {
+		if ( dropdown.options[dropdown.selectedIndex].value > 0 ) {
+			location.href = "http://brandon.sternefamily.net/?cat="+dropdown.options[dropdown.selectedIndex].value;
+		}
+	}
+	dropdown.onchange = onCatChange;
+/* ]]> */
+</script>
+
+</form></aside><aside id="short_archives-2" class="widget widget_archive"><form class="custom"><label>Archives</label>		<select name="archive-dropdown" onchange="document.location.href=this.options[this.selectedIndex].value;" class="hidden-field" data-id="1437357699020-2Am7q"> <option value="">Month</option> 	<option value="http://brandon.sternefamily.net/2013/11/"> November 2013 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2013/10/"> October 2013 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2011/03/"> March 2011 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2011/01/"> January 2011 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2010/10/"> October 2010 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2010/09/"> September 2010 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2010/08/"> August 2010 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2010/07/"> July 2010 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2010/05/"> May 2010 &nbsp;(4)</option>
+	<option value="http://brandon.sternefamily.net/2010/04/"> April 2010 &nbsp;(2)</option>
+	<option value="http://brandon.sternefamily.net/2010/01/"> January 2010 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2009/10/"> October 2009 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2009/04/"> April 2009 &nbsp;(2)</option>
+	<option value="http://brandon.sternefamily.net/2008/09/"> September 2008 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2008/06/"> June 2008 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2007/12/"> December 2007 &nbsp;(2)</option>
+	<option value="http://brandon.sternefamily.net/2007/06/"> June 2007 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2007/04/"> April 2007 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2007/03/"> March 2007 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2006/11/"> November 2006 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2006/09/"> September 2006 &nbsp;(2)</option>
+	<option value="http://brandon.sternefamily.net/2006/08/"> August 2006 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2006/04/"> April 2006 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2005/06/"> June 2005 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2005/05/"> May 2005 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2005/03/"> March 2005 &nbsp;(1)</option>
+	<option value="http://brandon.sternefamily.net/2005/02/"> February 2005 &nbsp;(2)</option>
+	<option value="http://brandon.sternefamily.net/2005/01/"> January 2005 &nbsp;(1)</option>
+ </select><div class="custom dropdown" data-id="1437357699020-2Am7q"><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/#" class="current">Month</a><a href="http://brandon.sternefamily.net/2007/06/aes-tutorial-python-implementation/#" class="selector"></a><ul><li class="selected">Month</li><li class=""> November 2013 &nbsp;(1)</li><li class=""> October 2013 &nbsp;(1)</li><li class=""> March 2011 &nbsp;(1)</li><li class=""> January 2011 &nbsp;(1)</li><li class=""> October 2010 &nbsp;(1)</li><li class=""> September 2010 &nbsp;(1)</li><li class=""> August 2010 &nbsp;(1)</li><li class=""> July 2010 &nbsp;(1)</li><li class=""> May 2010 &nbsp;(4)</li><li class=""> April 2010 &nbsp;(2)</li><li class=""> January 2010 &nbsp;(1)</li><li class=""> October 2009 &nbsp;(1)</li><li class=""> April 2009 &nbsp;(2)</li><li class=""> September 2008 &nbsp;(1)</li><li class=""> June 2008 &nbsp;(1)</li><li class=""> December 2007 &nbsp;(2)</li><li class=""> June 2007 &nbsp;(1)</li><li class=""> April 2007 &nbsp;(1)</li><li class=""> March 2007 &nbsp;(1)</li><li class=""> November 2006 &nbsp;(1)</li><li class=""> September 2006 &nbsp;(2)</li><li class=""> August 2006 &nbsp;(1)</li><li class=""> April 2006 &nbsp;(1)</li><li class=""> June 2005 &nbsp;(1)</li><li class=""> May 2005 &nbsp;(1)</li><li class=""> March 2005 &nbsp;(1)</li><li class=""> February 2005 &nbsp;(2)</li><li class=""> January 2005 &nbsp;(1)</li></ul></div>
+</form></aside>      </div>
+    </div><!-- right column -->
+
+
+  </div><!-- end main row -->
+
+  <footer class="row page-info">
+    <div class="large-12 columns text-center">
+      <div class="large-4 columns text-center">
+        <p>Site design and hosting by Dynamic Media. Proudly powered by <a href="http://wordpress.org/">Wordpress</a>.</p>
+      </div>
+      <div class="large-4 columns text-center">
+        <p>Copyright © 2005–2015 Brandon Sterne. All rights reserved.</p>
+      </div>
+      <div class="large-4 columns text-center">
+        <p><a href="http://www.goines.net/Poster_art1/poster_26.html">Winged Lion of St. Mark</a> reproduced with permission by David Lance Goines.</p>
+      </div>
+    </div>
+  </footer><!-- end footer row -->
+
+
+  <script>
+  document.write('<script src=http://brandon.sternefamily.net/wp-content/themes/sterno/' +
+  ('__proto__' in {} ? 'foundation/js/vendor/zepto' : 'foundation/js/vendor/jquery') +
+  '.js><\/script>')
+  </script><script src="./aespy_files/zepto.js"></script>
+  
+  <script src="./aespy_files/foundation.min.js"></script>
+  
+  <script>
+    $(document).foundation();
+  </script>
+
+
+
+<iframe src="about:blank" style="height: 0px; width: 0px; visibility: hidden; border: none; display: none;">This frame prevents back/forward cache problems in Safari.</iframe></body></html>

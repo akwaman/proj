@@ -1,0 +1,24 @@
+# makefile for DES
+# changed for OSK (pHa)
+# the file 'getpass.c' is UNIX-Source
+# for OSK you have to use the os9lib-getpass or change the code
+# the file 'getopt.c' was posted very often. Ask your neighbours.
+
+CFLAGS = -xi
+OUTDIR = /h0/ETC/CMDS
+LIB =  /h0/LIB
+OS9LIB = $(LIB)/os9lib.l
+
+all: des.r descert des 
+	echo DONE.
+
+des: main.r 
+	cc $(CFLAGS) -f=$(OUTDIR)/des main.r des.r \
+	   -l=$(LIB)/getopt.r -l=$(OS9LIB)
+
+descert: descert.r
+	cc $(CFLAGS) -f=$(OUTDIR)/descert descert.r des.r
+
+certify: $(OUTDIR)/descert testdata
+	descert <testdata
+	touch certify

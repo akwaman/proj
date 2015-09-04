@@ -1,0 +1,10 @@
+Git Repository
+---------------------
+git help
+
+git add foo.c
+git commit -m "some comments"
+
+git diff
+git status
+

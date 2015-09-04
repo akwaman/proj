@@ -1,3 +1,21 @@
+*.bak
+*.orig
+*.[12345]
+*.class
+*.o
+*.a
+*.out
+*~
+*.log
+*.log.*
+*.cache
+*.history
+*.lib
+*#*\#
+*.\#*
+
+## stuff from github setup 
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

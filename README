@@ -1,10 +1,79 @@
 Git Repository
 ---------------------
+git init    makes a new repository
+
 git help
+git config --list
+.gitignore   don't report specified files
 
 git add foo.c
 git commit -m "some comments"
 
+can automatically stage every tracked file - no need for git add
+git commit -a  -m "some comments"
+
 git diff
+git diff --staged   (see what's been staged so far
+git diff --cached   synonymous command to staged
+
+git rm bar.c     remove from repository AND working directory
+git mv foo.c goo.c    rename 
+
+git log       see history
+git status    see what has been staged
+
+git remote add origin git@github.com:akwaman/proj.git
+(akwaman/Me!nKode69)
+
+undoing stuff...
+
+ex. forgot to add a file after a commit
+git commit -m "did stuff"
+git add forgot.c
+git commit --amend    
+
+ex. remove a staged (add) file
+git add bla.c
+git status  
+git reset HEAD bla.c
 git status
+
+ex. revert modified file to repository version - careful, will overwrite mods
+git checkout -- unmodify.c
+
+Remote Repositories
+---------------------
+git remote [-v]
+
+git clone https://github.com/ ...some project name
+
+
+setting up SSH (done for ubuntu and windows laptops)
+----------------------------------------------------
+1. check for SSH keys
+ls -al ~/.ssh
+
+2. generate new SSH key
+ssh-keygen -t rsa -b 4096 -C "scheidt@gmail.com"
+(keep default settings)
+pass: Ichmaggerneka...fahr.."
+
+3. add key to ssh-agent:
+ssh-agent -s
+ssh-add ~/.ssh/id_rsa
+
+4. add SSH key to Github account
+copy ~/.ssh/id_rsa.pub   (to clipboard)
+go to github.com/akwaman account
+sign in
+go to settings
+SSH keys
+Add SSH key
+paste into "key field"
+click add key
+
+5. test the connection
+ssh -T git@github.com
+
+
 

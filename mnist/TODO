@@ -1,0 +1,18 @@
+Data Augmentation
+  jitter
+  rotate
+  stretch and distort
+  noise
+    random speckle
+    missing blocks, stripes
+    different non Gaussian noise distributions
+
+Neural Network Configurations
+
+Other ML algorithms
+
+DSP preprocessing
+  high pass filtering to detect edges
+  conversion into another domain: Haar wavelet, Fourier etc
+  
+  

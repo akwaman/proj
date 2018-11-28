@@ -48,6 +48,18 @@ git remote [-v]
 git clone https://github.com/ ...some project name
 
 
+Adding new files or directories to my akwaman Github Repo
+---------------------------------------------------------
+0. cd proj/<sub project>    # eg. proj/mnist
+1. git add <files>
+2. git commit
+3. git push origin master
+4. enter my github.com username (akwaman) and password (...)
+
+done. now to clone the repo on another machine
+
+5. git pull https://github.com/akwaman/proj
+
 setting up SSH (done for ubuntu and windows laptops)
 ----------------------------------------------------
 1. check for SSH keys

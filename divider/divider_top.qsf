@@ -1,0 +1,9 @@
+set_instance_assignment -name VIRTUAL_PIN ON -to dividend
+set_instance_assignment -name VIRTUAL_PIN ON -to divisor
+set_instance_assignment -name VIRTUAL_PIN ON -to quotient
+set_instance_assignment -name VIRTUAL_PIN ON -to remainder
+set_instance_assignment -name VIRTUAL_PIN ON -to overflow
+set_instance_assignment -name VIRTUAL_PIN ON -to error_divide_by_zero
+set_global_assignment -name DEVICE 5SGXEA7N2F45I3
+set_parameter -name TARGET_CHIP 2
+

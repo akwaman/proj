@@ -1,0 +1,2 @@
+derive_clocks -period 400MHz
+derive_clock_uncertainty

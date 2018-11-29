@@ -1,0 +1,5 @@
+project_open add_sub_top
+create_timing_netlist
+read_sdc add_sub.sdc
+update_timing_netlist
+report_timing -npaths 1

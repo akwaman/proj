@@ -1,0 +1,5 @@
+project_open divider_top
+create_timing_netlist
+read_sdc divider_top.sdc
+update_timing_netlist
+report_timing -npaths 1

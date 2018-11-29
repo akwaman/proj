@@ -1,0 +1,18 @@
+Simulate a simple counter.v Verilog module using Verilator.
+Generate VCD trace dump and use gtkwave to view graphical waveforms.
+
+Verilator converts the Verilog into C++ classes named V<module> and 
+puts them into the obj_dir director (.cpp and .h files). A
+Makefile (.mk) is also generated for compiling the classes with gcc.
+
+The testbench is written in C++ and named counter_tb.cpp.
+
+The Vmodule class that Verilator created exposes all of the module
+inputs and outputs as variables. These can be set directly in the
+testbench. For example, setting the clock to 0 then to 1 will trigger
+the module's @(posedge clk) blocks.
+
+Verilator simulation will stop when it encounters a $finish() in
+the Verilog module or when the testbench calls exit(0).
+
+

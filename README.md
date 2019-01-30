@@ -1,2 +1,3 @@
-# proj
-just playing around ..
+proj - experimental code
+
+

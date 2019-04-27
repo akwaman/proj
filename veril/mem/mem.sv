@@ -1,3 +1,11 @@
+//------------------------------------------------------------------------------
+// File: mem.sv
+// Author: Paul Scheidt (scheidt@gmail.com)
+// Description:
+// Simple single port memory model for Verilator 
+// experiments.
+//------------------------------------------------------------------------------
+
 // Single port memory
 
 module mem #(

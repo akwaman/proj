@@ -1,3 +1,9 @@
+#-------------------------------------------------------------------------------
+# File: mem_tb.cpp
+# Author: Paul Scheidt (scheidt@gmail.com)
+# Description:
+# Example testbench of a simple memory model.
+#-------------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

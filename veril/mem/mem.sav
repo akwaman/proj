@@ -1,0 +1,27 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Sat Apr 27 00:03:51 2019
+[*]
+[dumpfile] "/mnt/c/msys64/home/scheidt/proj/veril/mem/mem.vcd"
+[dumpfile_mtime] "Sat Apr 27 00:01:39 2019"
+[dumpfile_size] 3176
+[savefile] "/mnt/c/msys64/home/scheidt/proj/veril/mem/mem.sav"
+[timestart] 20
+[size] 2301 672
+[pos] 1067 383
+*-2.143479 44 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[sst_width] 191
+[signals_width] 358
+[sst_expanded] 1
+[sst_vpaned_height] 182
+@28
+TOP.mem.clk
+TOP.mem.wen
+@22
+TOP.mem.addr[12:0]
+TOP.mem.wdata[31:0]
+@23
+TOP.mem.rdata[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

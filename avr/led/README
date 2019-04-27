@@ -1,0 +1,68 @@
+Basic setup on AVR development under Ubuntu:
+--------------------------------------------------------------------------------
+references:
+http://maxembedded.com/2015/06/setting-up-avr-gcc-toolchain-on-linux-and-mac-os-x/
+
+
+
+Install avr-gcc toolchain
+--------------------------------------------------------------------------------
+sudo apt-get update
+sudo apt-get upgrade all
+Then install the required packages.
+
+sudo apt-get install gcc-avr binutils-avr avr-libc
+
+You can also install gdb-avr is you like. It is useful for in-system debugging/emulation.
+
+sudo apt-get install gdb-avr
+
+Once done, type avr- in the terminal and press tab twice (do not hit enter).
+You should be able to see all the tools installed for you.
+
+Possible completions are:
+avr-addr2line 	avr-ar 	avr-as 	avr-c++ 	avr-c++filt 	avr-cpp
+avr-elfedit 	avr-g++ 	avr-gcc 	avr-gcc-5.4.0 	avr-gcc-ar 	avr-gcc-nm
+avr-gcc-ranlib 	avr-gcov 	avr-gcov-tool 	avr-gdb 	avr-gprof 	avr-ld
+avr-ld.bfd 	avr-man 	avr-nm 	avr-objcopy 	avr-objdump 	avr-ranlib
+avr-readelf 	avr-run 	avr-size 	avr-strings 	avr-strip
+
+Install avrdude
+--------------------------------------------------------------------------------
+AVR-GCC is a toolchain that will help you with the software development process,
+but doesn’t do anything about burning the final executable (the hex file) to the
+microcontroller. For that we need to install AVR Downloader UploaDEr (avrdude).
+
+sudo apt-get install avrdude
+
+Once installed, type avrdude -v in the terminal to check if it is installed properly.
+
+Test the toolchain
+--------------------------------------------------------------------------------
+That's all we need for now. Let’s test whether it works or not. I have used the LED
+blinking code called led.c for ATmega32 for demonstration. 
+
+Assuming the name of the file is led.c, type the following in the terminal and
+check if the led.hex file is generated or not.
+
+The code should compile without any errors. 
+
+avr-gcc -g -Os -mmcu=atmega32 -c led.c
+avr-gcc -g -mmcu=atmega32 -o led.elf led.o
+avr-objcopy -j .text -j .data -O ihex led.elf led.hex
+
+Type cat led.hex in the terminal and see if the hex file is generated.
+It should look this:
+
+scheidt@SilverStone:/mnt/c/msys64/home/scheidt/proj/avr/example1$
+:100000000C942A000C9434000C9434000C943400AA
+:100010000C9434000C9434000C9434000C94340090
+:100020000C9434000C9434000C9434000C94340080
+:100030000C9434000C9434000C9434000C94340070
+:100040000C9434000C9434000C9434000C94340060
+:100050000C94340011241FBECFE5D8E0DEBFCDBF25
+:100060000E9436000C944D000C94000081E084BB8B
+:1000700085BB2FEF39E698E1215030409040E1F701
+:1000800000C0000015BA2FEF39E698E1215030404A
+:0E0090009040E1F700C00000EBCFF894FFCFE6
+:00000001FF

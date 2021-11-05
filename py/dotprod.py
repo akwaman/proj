@@ -17,26 +17,26 @@ import re
 from random import randint
 
 def print_help():
-  print "\nEvaluate performance of different methods of vector dot product"
-  print "  dotprod [nmax] <option>"
-  print "  nmax : maximum size is 2**nmax, default is 20"
-  print "  options:"
-  print "  -h"
-  print "  -plot\n"
+  print("\nEvaluate performance of different methods of vector dot product")
+  print("  dotprod [nmax] <option>")
+  print("  nmax : maximum size is 2**nmax, default is 20")
+  print("  options:")
+  print("  -h")
+  print("  -plot\n")
 
 
 doplot = 0
 nmax = 22
 
 for a in sys.argv:
-  print sys.argv
+  print( sys.argv)
   if re.search(r'\d+', a):
-    print "nmax = %s" % a
+    print( "nmax = %s" % a)
     nmax = int(a)+1
   if a == "-plot":
     doplot = 1
   if a == "-h":
-    print_help()
+    print(_help())
     sys.exit()
 
 iters = 5 # number of samples for mean execution time
